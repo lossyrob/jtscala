@@ -12,6 +12,7 @@ scalacOptions ++= Seq(
 
 libraryDependencies ++= Seq(
   "org.scalatest" % "scalatest_2.10" % "2.0.M5b" % "test",
+  "org.scalacheck" %% "scalacheck" % "1.11.1" % "test",
   "com.vividsolutions" % "jts" % "1.12"
 )
 
@@ -20,5 +21,4 @@ resolvers ++= Seq(
   "Typesafe Repo" at "http://repo.typesafe.com/typesafe/releases/",
   "sonatypeSnapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
 )
-
 

@@ -5,6 +5,9 @@ import com.vividsolutions.jts.geom
 abstract sealed class GeometryType
 
 object GeometryType {
+  implicit def jtsToGeometryType(g:geom.Geometry) = 
+    stringToGeometryType(g.getGeometryType)
+
   implicit def stringToGeometryType(s:String) =
     s match {
       case "GeometryCollection" => GeometryCollectionType
@@ -34,19 +37,3 @@ object Main {
   }
 }
 
-object Geometry {
-  implicit def jtsToJtscalaGeometry(g:geom.Geometry):Geometry = 
-    Geometry(g)
-}
-
-case class Geometry(g:geom.Geometry) extends AnyVal {
-  def area = g.getArea
-  def boundary = g.getBoundary
-  def boundaryDimension = g.getBoundaryDimension
-  def centriod = g.getCentroid
-  def coordinate:(Double,Double) = g.getCoordinate
-  def coordinates:Seq[(Double,Double)] = g.getCoordinates
-  def dimension = g.getDimension
-  def envelope = g.getEnvelope
-
-}

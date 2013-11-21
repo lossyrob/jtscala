@@ -1,0 +1,72 @@
+package jtscala
+
+import com.vividsolutions.jts.{geom => jts}
+
+trait Geometry {
+  val geom:jts.Geometry
+
+  //def area:Double = geom.getArea
+  def centroid:Point = Point(geom.getCentroid)
+  def interiorPoint:Point = Point(geom.getInteriorPoint)
+
+  def coveredBy(other:Geometry) =
+    geom.coveredBy(other.geom)
+
+  def covers(other:Geometry) =
+    geom.covers(other.geom)
+
+  def intersects(other:Geometry) =
+    geom.intersects(other.geom)
+
+  def disjoint(other:Geometry) =
+    geom.disjoint(other.geom)
+
+  def touches(other:Geometry) =
+    geom.touches(other.geom)
+
+  def distance(other:Geometry) =
+    geom.distance(other.geom)
+
+  // Curious to benchmark this against .distance < d,
+  // JTS implements it as a different op, I'm assuming 
+  // for speed.
+  def withinDistance(other:Geometry,d:Double) =
+    geom.isWithinDistance(other.geom,d)
+
+  // TO BE IMPLEMENTED ON A PER TYPE BASIS
+
+  // buffer
+  // copy
+  // contains
+  // crosses
+  // difference ( - )
+  // equal (with tolerance?)
+  // equalExact (huh?)
+  // def area:Double = geom.getArea  (not for points?)
+  // boundary
+  // vertices
+  // envelope
+  // boundingBox
+  // length
+  // perimeter
+  // intersection ( | )
+  // isRectangle (polygon)
+  // isSimple
+  // isValid ( don't allow invalid? )
+  // normalize (hmmm)
+  // overlaps (needs interior to be same dimension as geoms, geom dims ==)
+  // symDifference
+  // union ( ^ )
+  // within
+  // something with relate if it's fast (benchmark)
+  
+
+  // def boundary = jts.getBoundary
+  // def boundaryDimension = jts.getBoundaryDimension
+  // def centriod = jts.getCentroid
+  // def coordinate:(Double,Double) = jts.getCoordinate
+  // def coordinates:Seq[(Double,Double)] = jts.getCoordinates
+  // def dimension = jts.getDimension
+
+
+}
