@@ -13,8 +13,12 @@ case class Point(geom:jts.Point) extends Geometry {
       case _ => None
     }
 
-  // def buffer(d:Double):Polygon =
-  //   Polygon(geom.buffer(d).asInstanceOf[jts.Polygon])
+  def buffer(d:Double):Polygon =
+    geom.buffer(d).asInstanceOf[Polygon]
+
+  def within(l:Line) = geom.within(l.geom)
+  def within(p:Polygon) = geom.within(p.geom)
+
 }
 
 object Point {

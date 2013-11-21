@@ -18,7 +18,3 @@ case class PolygonSeq(ps:Seq[Polygon]) extends MultiGeometryWrapper {
   val geom = factory.createMultiPolygon(ps.map(_.geom).toArray)
 }
 
-case class GeometrySeq(gs:Seq[Geometry]) extends MultiGeometryWrapper {
-  val geom = factory.createGeometryCollection(gs.map(_.geom).toArray)
-}
-

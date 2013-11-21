@@ -18,6 +18,15 @@ case class Polygon(geom:jts.Polygon) extends Geometry {
       case gc:jts.GeometryCollection => GeometryCollectionResult(gc)
       case _ => NoResult
     }
+
+  def buffer(d:Double):Polygon =
+    geom.buffer(d).asInstanceOf[Polygon]
+
+  def contains(p:Point) = geom.contains(p.geom)
+  def contains(l:Line) = geom.contains(l.geom)
+  def contains(p:Polygon) = geom.contains(p.geom)
+
+  def within(p:Polygon) = geom.within(p.geom)
 }
 
 object Polygon {

@@ -19,6 +19,12 @@ object Generators {
   lazy val genPoint:Gen[Point] = 
     genCoordinate.map(factory.createPoint(_))
 
+  lazy val genMultiPoint:Gen[MultiPoint] = 
+    for {
+      size <- Gen.choose(1,100)
+      coords <- Gen.containerOfN[Set,Coordinate](size,genCoordinate)
+    } yield { factory.createMultiPoint(coords.toArray) }
+
   lazy val genLineString:Gen[LineString] =
     for {
       size <-Gen.choose(2,40)
@@ -49,6 +55,9 @@ object Generators {
 
   implicit lazy val arbPoint: Arbitrary[Point] =
     Arbitrary(genPoint)
+
+  implicit lazy val arbMultiPoint: Arbitrary[MultiPoint] =
+    Arbitrary(genMultiPoint)
 
   implicit lazy val arbLineString: Arbitrary[LineString] =
     Arbitrary(genLineString)

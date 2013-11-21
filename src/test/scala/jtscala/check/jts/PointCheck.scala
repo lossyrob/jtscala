@@ -5,7 +5,7 @@ import com.vividsolutions.jts.geom._
 import org.scalacheck._
 import Prop._
 
-object PointSpecification extends Properties("Point") {
+object PointCheck extends Properties("Point") {
   import Generators._
 
   property("getEnvelope") = forAll { (p: Point) =>
@@ -13,6 +13,14 @@ object PointSpecification extends Properties("Point") {
       case x:Point => true
       case _ => false
     }
+  }
+
+  property("within[itself]") = forAll { (p: Point) =>
+    p.within(p)
+  }
+
+  property("contains[itself]") = forAll { (p: Point) =>
+    p.contains(p)
   }
 
   property("buffer") = forAll { (p: Point, d: Double) =>

@@ -9,8 +9,12 @@ case class Line(geom:jts.LineString) extends Geometry {
   // tougher maybe.
   def closed = geom.isClosed
 
-  def crosses(g:Geometry) =
-    geom.crosses(g.geom)
+  def crosses(g:Geometry) = geom.crosses(g.geom)
+
+  def contains(p:Point) = geom.contains(p.geom)
+  def contains(l:Line) =  geom.contains(l.geom)
+  def within(l:Line) = geom.within(l.geom)
+  def within(p:Polygon) = geom.within(p.geom)
 
   def intersection(p:Point):Option[Point] =
     p.intersection(this)
@@ -44,6 +48,9 @@ case class Line(geom:jts.LineString) extends Geometry {
         assert(x.isEmpty)
         Seq()
     }
+
+  def buffer(d:Double):Polygon =
+    geom.buffer(d).asInstanceOf[Polygon]
 }
 
 object Line {

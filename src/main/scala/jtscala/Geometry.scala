@@ -28,16 +28,15 @@ trait Geometry {
     geom.distance(other.geom)
 
   // Curious to benchmark this against .distance < d,
-  // JTS implements it as a different op, I'm assuming 
+  // JTS implements it as a different op, I'm assuming
   // for speed.
   def withinDistance(other:Geometry,d:Double) =
     geom.isWithinDistance(other.geom,d)
 
   // TO BE IMPLEMENTED ON A PER TYPE BASIS
 
-  // buffer
-  // copy
-  // contains
+  
+
   // crosses
   // difference ( - )
   // equal (with tolerance?)
@@ -59,6 +58,10 @@ trait Geometry {
   // union ( ^ )
   // within
   // something with relate if it's fast (benchmark)
+
+  /**IMPLEMENTED**/
+  // buffer - None on collections, always a polygon. (wait maybe on Multli's)
+  // contains - Not on collections (wait maybe on Multli's) - if not, then other Geometry methods don't belong.
   
 
   // def boundary = jts.getBoundary
@@ -67,6 +70,4 @@ trait Geometry {
   // def coordinate:(Double,Double) = jts.getCoordinate
   // def coordinates:Seq[(Double,Double)] = jts.getCoordinates
   // def dimension = jts.getDimension
-
-
 }
