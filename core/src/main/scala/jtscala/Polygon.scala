@@ -37,6 +37,8 @@ case class Polygon(geom:jts.Polygon) extends Geometry {
 
   val exterior = Line(geom.getExteriorRing)
 
+  def area:Double = geom.getArea
+
   def &(p:Point) = intersection(p)
   def intersection(p:Point):PointIntersectionResult = p.intersection(this)
 
@@ -56,6 +58,18 @@ case class Polygon(geom:jts.Polygon) extends Geometry {
   def &(ps:PolygonSet) = intersection(ps)
   def intersection(ps:PolygonSet):PolygonSetIntersectionResult = ps.intersection(this)
 
+  def |(p:Point) = union(p)
+  def union(p:Point):PolygonXUnionResult =
+    geom.union(p.geom)
+
+  def |(l:Line) = union(l)
+  def union(l:Line):PolygonXUnionResult =
+    geom.union(l.geom)
+
+  def |(p:Polygon) = union(p)
+  def union(p:Polygon):PolygonPolygonUnionResult =
+    geom.union(p.geom) 
+
   def buffer(d:Double):Polygon =
     geom.buffer(d).asInstanceOf[Polygon]
 
@@ -64,29 +78,5 @@ case class Polygon(geom:jts.Polygon) extends Geometry {
   def contains(p:Polygon) = geom.contains(p.geom)
 
   def within(p:Polygon) = geom.within(p.geom)
-
-  def union(p:Polygon):PolygonPolygonUnionResult =
-    geom.union(p.geom) match {
-      case mp:jts.MultiPolygon => PolygonSetResult(mp)
-      case p:jts.Polygon => PolygonResult(Polygon(p))
-      case x => sys.error("Unexpected result of union of two polygons: $x")
-    }
-  def |(p:Polygon):PolygonPolygonUnionResult = union(p)
-
-  def union(l:Line):PolygonLineUnionResult =
-    geom.union(l.geom) match {
-      case gc:jts.GeometryCollection => GeometryCollectionResult(gc)
-      case p:jts.Polygon => PolygonResult(Polygon(p))
-      case x => sys.error("Unexpected result of union of a point and a polygon: $x")
-    }
-  def |(l:Line):PolygonLineUnionResult = union(l)
-
-  def union(p:Point):PolygonPointUnionResult =
-    geom.union(p.geom) match {
-      case gc:jts.GeometryCollection => GeometryCollectionResult(gc)
-      case p:jts.Polygon => PolygonResult(Polygon(p))
-      case x => sys.error("Unexpected result of union of a point and a polygon: $x")
-    }
-  def |(p:Point):PolygonPointUnionResult = union(p)
 }
 

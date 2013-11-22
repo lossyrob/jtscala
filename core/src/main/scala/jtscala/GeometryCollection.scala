@@ -4,7 +4,7 @@ import GeomFactory._
 import com.vividsolutions.jts.{geom=>jts}
 import scala.collection.mutable
 
-case class GeometryCollection(points:Set[Point],lines:Set[Line],polygons:Set[Polygon],gc:jts.GeometryCollection) extends Geometry {
+case class GeometryCollection(points:Set[Point],lines:Set[Line],polygons:Set[Polygon],gc:jts.GeometryCollection) {
   val geom = factory.createGeometryCollection((points ++ lines ++ polygons).map(_.geom).toArray)
 }
 

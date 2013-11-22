@@ -43,6 +43,17 @@ case class Line(geom:jts.LineString,points:List[Point]) extends Geometry {
   def &(ps:PolygonSet) = intersection(ps)
   def intersection(ps:PolygonSet):LineSetIntersectionResult = ps.intersection(this)
 
+  def |(p:Point) = union(p)
+  def union(p:Point):LinePointUnionResult =
+    geom.union(p.geom)
+
+  def |(l:Line) = union(l)
+  def union(l:Line):LineLineUnionResult =
+    geom.union(l.geom)
+
+  def |(p:Polygon) = union(p)
+  def union(p:Polygon):PolygonXUnionResult = p.union(this)
+
   // Not sure what to do about LinearString, if it really
   // needs to be around...will make construction of Polys 
   // tougher maybe.

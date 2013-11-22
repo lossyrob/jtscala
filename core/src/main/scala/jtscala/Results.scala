@@ -38,11 +38,11 @@ object PolygonPolygonIntersectionResult {
   implicit def jtsToResult(geom:jts.Geometry):PolygonPolygonIntersectionResult =
     geom match {
       case p:jts.Point => PointResult(p)
-      case ps:jts.MultiPoint => PointSetResult(ps)
       case l:jts.LineString => LineResult(l)
-      case ls:jts.MultiLineString => LineSetResult(ls)
       case p:jts.Polygon => PolygonResult(p)
+      case ps:jts.MultiPoint => PointSetResult(ps)
       case ps:jts.MultiPolygon => PolygonSetResult(ps)
+      case ls:jts.MultiLineString => LineSetResult(ls)
       case gc:jts.GeometryCollection => GeometryCollectionResult(gc)
       case _ => NoResult
     }
@@ -90,9 +90,61 @@ object PolygonSetIntersectionResult {
 }
 
 // Union
-abstract sealed trait PolygonPointUnionResult
-abstract sealed trait PolygonLineUnionResult
+
+abstract sealed trait PointPointUnionResult
+object PointPointUnionResult {
+  implicit def jtsToResult(geom: jts.Geometry): PointPointUnionResult =
+    geom match {
+      case l:jts.Point => PointResult(l)
+      case gc:jts.MultiPoint => PointSetResult(gc)
+      case _ => 
+        sys.error(s"Unexpected result for Point Point intersection: ${geom.getGeometryType}")
+    }
+}
+
+abstract sealed trait LinePointUnionResult
+object LinePointUnionResult {
+  implicit def jtsToResult(geom: jts.Geometry): LinePointUnionResult =
+    geom match {
+      case l:jts.LineString => LineResult(l)
+      case gc:jts.GeometryCollection => GeometryCollectionResult(gc)
+      case _ => 
+        sys.error(s"Unexpected result for Line Point intersection: ${geom.getGeometryType}")
+    }
+}
+
+abstract sealed trait LineLineUnionResult
+object LineLineUnionResult {
+  implicit def jtsToResult(geom: jts.Geometry): LineLineUnionResult =
+    geom match {
+      case l:jts.LineString => LineResult(l)
+      case ml:jts.MultiLineString => LineSetResult(ml)
+      case _ => 
+        sys.error(s"Unexpected result for Line Line intersection: ${geom.getGeometryType}")
+    }
+}
+
+abstract sealed trait PolygonXUnionResult
+object PolygonXUnionResult {
+  implicit def jtsToResult(geom:jts.Geometry): PolygonXUnionResult =
+    geom match {
+      case gc:jts.GeometryCollection => GeometryCollectionResult(gc)
+      case p:jts.Polygon => PolygonResult(Polygon(p))
+      case _ => 
+        sys.error(s"Unexpected result for Polygon intersection: ${geom.getGeometryType}")
+    }
+}
+
 abstract sealed trait PolygonPolygonUnionResult
+object PolygonPolygonUnionResult {
+  implicit def jtsToResult(geom:jts.Geometry): PolygonPolygonUnionResult =
+    geom match {
+      case p:jts.Polygon => PolygonResult(p)
+      case mp:jts.MultiPolygon => PolygonSetResult(mp)
+      case _ =>
+        sys.error(s"Unexpected result for Polygon-Polygon intersection: ${geom.getGeometryType}")
+    }
+}
 
 case object NoResult 
     extends PointIntersectionResult
@@ -111,6 +163,7 @@ case class PointResult(p:Point)
        with PointSetIntersectionResult
        with LineSetIntersectionResult
        with PolygonSetIntersectionResult
+       with PointPointUnionResult
 
 case class LineResult(l:Line) 
     extends LineLineIntersectionResult
@@ -118,11 +171,12 @@ case class LineResult(l:Line)
        with PolygonPolygonIntersectionResult
        with LineSetIntersectionResult
        with PolygonSetIntersectionResult
+       with LinePointUnionResult
+       with LineLineUnionResult
 
 case class PolygonResult(p:Polygon) 
     extends PolygonPolygonIntersectionResult
-       with PolygonPointUnionResult
-       with PolygonLineUnionResult
+       with PolygonXUnionResult
        with PolygonPolygonUnionResult
        with PolygonSetIntersectionResult
 
@@ -131,12 +185,14 @@ case class PointSetResult(ls:Set[Point])
        with PointSetIntersectionResult
        with LineSetIntersectionResult
        with PolygonSetIntersectionResult
+       with PointPointUnionResult
 
 case class LineSetResult(ls:Set[Line]) 
     extends PolygonLineIntersectionResult
        with PolygonPolygonIntersectionResult
        with LineSetIntersectionResult
        with PolygonSetIntersectionResult
+       with LineLineUnionResult
 
 case class PolygonSetResult(ps:Set[Polygon]) 
     extends PolygonPolygonIntersectionResult
@@ -144,8 +200,8 @@ case class PolygonSetResult(ps:Set[Polygon])
        with PolygonSetIntersectionResult
 
 case class GeometryCollectionResult(gc:GeometryCollection) 
-    extends PolygonPointUnionResult
-       with PolygonLineUnionResult
-       with PolygonPolygonIntersectionResult
+    extends PolygonPolygonIntersectionResult
        with LineSetIntersectionResult
        with PolygonSetIntersectionResult
+       with LinePointUnionResult
+       with PolygonXUnionResult

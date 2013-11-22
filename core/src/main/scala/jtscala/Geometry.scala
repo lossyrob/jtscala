@@ -35,7 +35,6 @@ trait Geometry {
 
   // TO BE IMPLEMENTED ON A PER TYPE BASIS
   
-  // intersection ( & )
   // union ( | )
 
   // crosses
