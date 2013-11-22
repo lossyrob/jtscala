@@ -4,14 +4,13 @@ import com.vividsolutions.jts.{geom=>jts}
 import GeomFactory._
 
 case class Point(geom:jts.Point) extends Geometry {
+  assert(!geom.isEmpty)
   val x = geom.getX
   val y = geom.getY
 
-  def intersection(other:Geometry):Option[Point] =
-    geom.intersection(other.geom) match {
-      case p:jts.Point => Some(Point(p))
-      case _ => None
-    }
+  def &(other:Geometry) = intersection(other)
+  def intersection(other:Geometry):PointIntersectionResult =
+    geom.intersection(other.geom)
 
   def buffer(d:Double):Polygon =
     geom.buffer(d).asInstanceOf[Polygon]
@@ -25,5 +24,5 @@ object Point {
   def apply(x:Double,y:Double):Point =
     Point(factory.createPoint(new jts.Coordinate(x,y)))
 
-  implicit def jts2Point(geom:jts.Point) = apply(geom)
+  implicit def jts2Point(geom:jts.Point):Point = apply(geom)
 }

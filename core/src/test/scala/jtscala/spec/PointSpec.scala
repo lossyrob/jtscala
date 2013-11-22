@@ -1,4 +1,6 @@
-package jtscala
+package jtscala.spec
+
+import jtscala._
 
 import org.scalatest.FunSpec
 import org.scalatest.matchers._

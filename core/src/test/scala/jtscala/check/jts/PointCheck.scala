@@ -52,5 +52,4 @@ object PointCheck extends Properties("Point") {
   property("getDimension") = forAll { (p:Point) =>
     p.getDimension == 0
   }
-
 }

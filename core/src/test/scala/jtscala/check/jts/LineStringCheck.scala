@@ -5,7 +5,7 @@ import com.vividsolutions.jts.geom._
 import org.scalacheck._
 import Prop._
 
-object LineCheck extends Properties("Line") {
+object LineStringCheck extends Properties("Line") {
   import Generators._
 
   // SLOW!
@@ -25,19 +25,7 @@ object LineCheck extends Properties("Line") {
 
   property("difference[self] => Empty") = 
     forAll { (l:LineString) =>
-      // l.normalize
-      // // val nl = factory.createLineString(
-      // //   l.getCoordinateSequence.toCoordinateArray.drop(1)
-      // // )
-
-      // val nl = factory.createPoint(l.getCoordinateSequence.toCoordinateArray()(0))
-
-      // println(l)
-      // println(nl)
-      l.difference(l).isEmpty//  match {
-                             //   case _:MultiLineString => true
-                             //   case _ => false
-                             // }
+      l.difference(l).isEmpty
     }
 
   property("difference[point] => (MultiLineString,LineString)") = 
@@ -105,42 +93,4 @@ object LineCheck extends Properties("Line") {
           }
       }
     }
-
-  // property("getEnvelope") = forAll { (p: Point) =>
-  //   p.getEnvelope match {
-  //     case x:Point => true
-  //     case _ => false
-  //   }
-  // }
-
-  // property("buffer") = forAll { (p: Point, d: Double) =>
-  //   p.buffer(d) match {
-  //     case x:Polygon => true
-  //     case _ => false
-  //   }
-  // }
-
-  // property("convexHull") = forAll { (p: Point) =>
-  //   p.convexHull match {
-  //     case x:Point => true
-  //     case _ => false
-  //   }
-  // }
-
-  // property("covers[itself]") = forAll { (p: Point) =>
-  //   p.covers(p)
-  // }
-
-  // property("covers[others]") = forAll { (p1: Point,p2: Point) =>
-  //   !p1.covers(p2) || (p1 == p2)
-  // }
-
-  // property("getInteriorPoint") = forAll { (p:Point) =>
-  //   p.getInteriorPoint == p
-  // }
-
-  // property("getDimension") = forAll { (p:Point) =>
-  //   p.getDimension == 0
-  // }
-
 }

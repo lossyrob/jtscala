@@ -34,8 +34,9 @@ trait Geometry {
     geom.isWithinDistance(other.geom,d)
 
   // TO BE IMPLEMENTED ON A PER TYPE BASIS
-
   
+  // intersection ( & )
+  // union ( | )
 
   // crosses
   // difference ( - )
@@ -48,14 +49,13 @@ trait Geometry {
   // boundingBox
   // length
   // perimeter
-  // intersection ( | )
   // isRectangle (polygon)
   // isSimple
   // isValid ( don't allow invalid? )
   // normalize (hmmm)
   // overlaps (needs interior to be same dimension as geoms, geom dims ==)
   // symDifference
-  // union ( ^ )
+
   // within
   // something with relate if it's fast (benchmark)
 
