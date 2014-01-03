@@ -35,9 +35,7 @@ object Polygon {
 case class Polygon(geom:jts.Polygon) extends Geometry {
   assert(!geom.isEmpty)
 
-  val exterior = Line(geom.getExteriorRing)
-
-  def area:Double = geom.getArea
+  lazy val exterior = Line(geom.getExteriorRing)
 
   def &(p:Point) = intersection(p)
   def intersection(p:Point):PointIntersectionResult = p.intersection(this)
@@ -78,5 +76,8 @@ case class Polygon(geom:jts.Polygon) extends Geometry {
   def contains(p:Polygon) = geom.contains(p.geom)
 
   def within(p:Polygon) = geom.within(p.geom)
-}
 
+  lazy val isRectangle = geom.isRectangle
+
+  lazy val area = geom.getArea
+}

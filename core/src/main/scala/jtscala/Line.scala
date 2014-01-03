@@ -23,8 +23,7 @@ case class Line(geom:jts.LineString,points:List[Point]) extends Geometry {
   assert(!geom.isEmpty)
 
   def &(p:Point) = intersection(p)
-  def intersection(p:Point):PointIntersectionResult =
-    p.intersection(this)
+  def intersection(p:Point):PointIntersectionResult = p.intersection(this)
 
   def &(l:Line) = intersection(l)
   def intersection(l:Line):LineLineIntersectionResult =

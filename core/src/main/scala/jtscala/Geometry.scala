@@ -41,14 +41,13 @@ trait Geometry {
   // difference ( - )
   // equal (with tolerance?)
   // equalExact (huh?)
-  // def area:Double = geom.getArea  (not for points?)
   // boundary
   // vertices
   // envelope
   // boundingBox
   // length
   // perimeter
-  // isRectangle (polygon)
+
   // isSimple
   // isValid ( don't allow invalid? )
   // normalize (hmmm)
@@ -61,6 +60,8 @@ trait Geometry {
   /**IMPLEMENTED**/
   // buffer - None on collections, always a polygon. (wait maybe on Multli's)
   // contains - Not on collections (wait maybe on Multli's) - if not, then other Geometry methods don't belong.
+  // isRectangle (polygon)
+  // def area:Double = geom.getArea  (not for points?)
   
 
   // def boundary = jts.getBoundary

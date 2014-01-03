@@ -2,7 +2,21 @@ package jtscala
 
 import com.vividsolutions.jts.{geom=>jts}
 
-// Intersection
+abstract sealed trait Result
+object Result {
+  implicit def jtsToResult(geom:jts.Geometry):Result =
+    geom match {
+      case p:jts.Point => PointResult(p)
+      case l:jts.LineString => LineResult(l)
+      case p:jts.Polygon => PolygonResult(p)
+      case ps:jts.MultiPoint => PointSetResult(ps)
+      case ps:jts.MultiPolygon => PolygonSetResult(ps)
+      case ls:jts.MultiLineString => LineSetResult(ls)
+      case gc:jts.GeometryCollection => GeometryCollectionResult(gc)
+      case _ => NoResult
+    }
+}
+
 abstract sealed trait PointIntersectionResult
 object PointIntersectionResult {
   implicit def jtsToResult(geom:jts.Geometry):PointIntersectionResult =
@@ -98,7 +112,7 @@ object PointPointUnionResult {
       case l:jts.Point => PointResult(l)
       case gc:jts.MultiPoint => PointSetResult(gc)
       case _ => 
-        sys.error(s"Unexpected result for Point Point intersection: ${geom.getGeometryType}")
+        sys.error(s"Unexpected result for Point Point union: ${geom.getGeometryType}")
     }
 }
 
@@ -109,7 +123,7 @@ object LinePointUnionResult {
       case l:jts.LineString => LineResult(l)
       case gc:jts.GeometryCollection => GeometryCollectionResult(gc)
       case _ => 
-        sys.error(s"Unexpected result for Line Point intersection: ${geom.getGeometryType}")
+        sys.error(s"Unexpected result for Line Point union: ${geom.getGeometryType}")
     }
 }
 
@@ -120,7 +134,7 @@ object LineLineUnionResult {
       case l:jts.LineString => LineResult(l)
       case ml:jts.MultiLineString => LineSetResult(ml)
       case _ => 
-        sys.error(s"Unexpected result for Line Line intersection: ${geom.getGeometryType}")
+        sys.error(s"Unexpected result for Line Line union: ${geom.getGeometryType}")
     }
 }
 
@@ -131,7 +145,7 @@ object PolygonXUnionResult {
       case gc:jts.GeometryCollection => GeometryCollectionResult(gc)
       case p:jts.Polygon => PolygonResult(Polygon(p))
       case _ => 
-        sys.error(s"Unexpected result for Polygon intersection: ${geom.getGeometryType}")
+        sys.error(s"Unexpected result for Polygon union: ${geom.getGeometryType}")
     }
 }
 
@@ -142,21 +156,48 @@ object PolygonPolygonUnionResult {
       case p:jts.Polygon => PolygonResult(p)
       case mp:jts.MultiPolygon => PolygonSetResult(mp)
       case _ =>
-        sys.error(s"Unexpected result for Polygon-Polygon intersection: ${geom.getGeometryType}")
+        sys.error(s"Unexpected result for Polygon-Polygon union: ${geom.getGeometryType}")
+    }
+}
+
+abstract sealed trait PolygonSetUnionResult
+object PolygonSetUnionResult {
+  implicit def jtsToResult(geom:jts.Geometry): PolygonSetUnionResult =
+    geom match {
+      case p:jts.Polygon => PolygonResult(p)
+      case mp:jts.MultiPolygon => PolygonSetResult(mp)
+      case gc:jts.GeometryCollection => GeometryCollectionResult(gc)
+      case _ =>
+        sys.error(s"Unexpected result for Polygon set union: ${geom.getGeometryType}")
+    }
+}
+
+// Boundary
+
+abstract sealed trait LineBoundaryResult
+object LineBoundaryResult {
+  implicit def jtsToResult(geom:jts.Geometry): LineBoundaryResult =
+    geom match {
+      case p:jts.Point => PointResult(p)
+      case mp:jts.MultiPoint => PointSetResult(mp)
+      case _ => NoResult
     }
 }
 
 case object NoResult 
-    extends PointIntersectionResult
+    extends Result
+       with PointIntersectionResult
        with LineLineIntersectionResult
        with PolygonLineIntersectionResult
        with PolygonPolygonIntersectionResult
        with PointSetIntersectionResult
        with LineSetIntersectionResult
        with PolygonSetIntersectionResult
+       with LineBoundaryResult
 
 case class PointResult(p:Point) 
-    extends PointIntersectionResult
+    extends Result
+       with PointIntersectionResult
        with LineLineIntersectionResult
        with PolygonLineIntersectionResult
        with PolygonPolygonIntersectionResult
@@ -164,9 +205,11 @@ case class PointResult(p:Point)
        with LineSetIntersectionResult
        with PolygonSetIntersectionResult
        with PointPointUnionResult
+       with LineBoundaryResult
 
 case class LineResult(l:Line) 
-    extends LineLineIntersectionResult
+    extends Result
+       with LineLineIntersectionResult
        with PolygonLineIntersectionResult
        with PolygonPolygonIntersectionResult
        with LineSetIntersectionResult
@@ -175,33 +218,42 @@ case class LineResult(l:Line)
        with LineLineUnionResult
 
 case class PolygonResult(p:Polygon) 
-    extends PolygonPolygonIntersectionResult
+    extends Result
+       with PolygonPolygonIntersectionResult
        with PolygonXUnionResult
        with PolygonPolygonUnionResult
        with PolygonSetIntersectionResult
+       with PolygonSetUnionResult
 
 case class PointSetResult(ls:Set[Point]) 
-    extends PolygonPolygonIntersectionResult
+    extends Result
+       with PolygonPolygonIntersectionResult
        with PointSetIntersectionResult
        with LineSetIntersectionResult
        with PolygonSetIntersectionResult
        with PointPointUnionResult
+       with LineBoundaryResult
 
 case class LineSetResult(ls:Set[Line]) 
-    extends PolygonLineIntersectionResult
+    extends Result
+       with PolygonLineIntersectionResult
        with PolygonPolygonIntersectionResult
        with LineSetIntersectionResult
        with PolygonSetIntersectionResult
        with LineLineUnionResult
 
 case class PolygonSetResult(ps:Set[Polygon]) 
-    extends PolygonPolygonIntersectionResult
+    extends Result
+       with PolygonPolygonIntersectionResult
        with PolygonPolygonUnionResult
        with PolygonSetIntersectionResult
+       with PolygonSetUnionResult
 
 case class GeometryCollectionResult(gc:GeometryCollection) 
-    extends PolygonPolygonIntersectionResult
+    extends Result
+       with PolygonPolygonIntersectionResult
        with LineSetIntersectionResult
        with PolygonSetIntersectionResult
        with LinePointUnionResult
        with PolygonXUnionResult
+       with PolygonSetUnionResult
